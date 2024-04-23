@@ -1,0 +1,8 @@
+.toggle {
+    min-width: 100%;
+}
+
+.checkbox {
+    cursor: default !important;
+    opacity: 1 !important;
+}
