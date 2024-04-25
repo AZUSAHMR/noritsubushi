@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:vercel": "next build && npm run migrate",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "migrate": "node tool/migrator.js"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.0.4",
