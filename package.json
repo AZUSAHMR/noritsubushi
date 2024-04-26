@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "next build && npm run migrate",
+    "build:data": "node tool/csv2json.js",
+    "build:vercel": "next build && npm run build:data && npm run migrate",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "npm run lint -- --fix",
