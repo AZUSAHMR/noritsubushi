@@ -164,25 +164,25 @@ export function SectionSelector(props: {
             <input
                 type="hidden"
                 name="origin.line"
-                value={origin?.line}
+                value={origin?.line || ""}
                 required={true}
             />
             <input
                 type="hidden"
                 name="origin.name"
-                value={origin?.name}
+                value={origin?.name || ""}
                 required={true}
             />
             <input
                 type="hidden"
                 name="destination.line"
-                value={destination?.line}
+                value={destination?.line || ""}
                 required={true}
             />
             <input
                 type="hidden"
                 name="destination.name"
-                value={destination?.name}
+                value={destination?.name || ""}
                 required={true}
             />
             <table>
