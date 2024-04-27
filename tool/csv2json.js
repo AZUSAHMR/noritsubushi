@@ -15,7 +15,7 @@ const LINE_PATH = path.join(DATA_PATH, "line");
                 .toString()
                 .split("\n")
                 .map(x => x.split(","))
-                .map(x => [x[0],parseFloat(x[1])])
+                .map(x => [x[0],parseFloat(x[1])*1000])
         );
     }
     

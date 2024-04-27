@@ -1,13 +1,10 @@
 "use client";
 
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Toggle } from "@/components/ui/toggle";
-import style from "@/components/ui/sectionselector.module.css";
-
-type STATION_DATA = { line: string; name: string };
-type HISTORY_DATA = { origin: STATION_DATA; destination: STATION_DATA };
-type TOGGLE_STATE = STATION_DATA | null;
+import lineData from "@/public/line.json";
+import { HISTORY_DATA, STATION_DATA, TOGGLE_STATE } from "@/types/noritsubushi";
 
 function StationToggle(props: {
     station: STATION_DATA;
@@ -18,7 +15,7 @@ function StationToggle(props: {
         <Toggle
             variant="outline"
             size="sm"
-            className={style.toggle}
+            className="min-w-full"
             pressed={
                 props.station.line === props.state?.line &&
                 props.station.name === props.state?.name
@@ -43,19 +40,30 @@ function StationToggle(props: {
 }
 
 export function SectionSelector(props: {
-    stations: STATION_DATA[];
+    name: string;
+    origin: TOGGLE_STATE;
+    setOrigin: Dispatch<SetStateAction<TOGGLE_STATE>>;
+    destination: TOGGLE_STATE;
+    setDestination: Dispatch<SetStateAction<TOGGLE_STATE>>;
+    isSystem?: boolean;
     histories?: HISTORY_DATA[];
 }) {
     const stations = useMemo(() => {
-        const stations: (STATION_DATA & {
+        const stations = props.isSystem
+            ? []
+            : Object.keys(lineData[props.name]).map((x) => ({
+                  line: props.name,
+                  name: x,
+              }));
+        const result: (STATION_DATA & {
             history: boolean;
             interval: boolean;
         })[] = [];
         const histories: (HISTORY_DATA & { checking?: boolean })[] | undefined =
             props.histories;
 
-        for (const [i, station] of props.stations.entries()) {
-            if (i > 0 && props.stations[i - 1].line !== station.line) {
+        for (const [i, station] of stations.entries()) {
+            if (i > 0 && stations[i - 1].line !== station.line) {
                 continue;
             }
 
@@ -69,7 +77,7 @@ export function SectionSelector(props: {
                     (x.destination.line === station.line &&
                         x.destination.name === station.name)
                 ) {
-                    if (i === 0 || i === props.stations.length - 1) {
+                    if (i === 0 || i === stations.length - 1) {
                         history = true;
                     }
 
@@ -81,14 +89,13 @@ export function SectionSelector(props: {
                 }
             });
 
-            stations.push({ ...station, history, interval });
+            result.push({ ...station, history, interval });
         }
 
-        return stations;
+        return result;
     }, [props]);
 
-    const [origin, setOrigin] = useState<TOGGLE_STATE>(null);
-    const [destination, setDestination] = useState<TOGGLE_STATE>(null);
+    const { origin, setOrigin, destination, setDestination } = props;
     const children = [];
 
     let checking = false;
@@ -128,9 +135,9 @@ export function SectionSelector(props: {
                     className={station.history ? "bg-primary" : "bg-secondary"}
                 >
                     <Checkbox
-                        disabled={true}
+                        disabled
                         checked={checked && !station.history}
-                        className={style.checkbox}
+                        className="!cursor-default !opacity-100"
                     />
                 </td>
                 <td key={`${key}_destination`}>
@@ -143,7 +150,7 @@ export function SectionSelector(props: {
             </tr>,
         );
 
-        if (i !== props.stations.length - 1) {
+        if (i !== stations.length - 1) {
             children.push(
                 <tr key={`${key}_interval`} className="h-4">
                     <td key={`${key}_origin_interval`} />
@@ -160,34 +167,8 @@ export function SectionSelector(props: {
     }
 
     return (
-        <div>
-            <input
-                type="hidden"
-                name="origin.line"
-                value={origin?.line || ""}
-                required={true}
-            />
-            <input
-                type="hidden"
-                name="origin.name"
-                value={origin?.name || ""}
-                required={true}
-            />
-            <input
-                type="hidden"
-                name="destination.line"
-                value={destination?.line || ""}
-                required={true}
-            />
-            <input
-                type="hidden"
-                name="destination.name"
-                value={destination?.name || ""}
-                required={true}
-            />
-            <table>
-                <tbody>{children}</tbody>
-            </table>
-        </div>
+        <table>
+            <tbody>{children}</tbody>
+        </table>
     );
 }
