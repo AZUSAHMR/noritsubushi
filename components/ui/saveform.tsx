@@ -26,7 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { SectionSelector } from "@/components/ui/sectionselector";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HISTORY_DATA, TOGGLE_STATE } from "@/types/noritsubushi";
 
 const FormSchema = z.object({
@@ -46,10 +46,16 @@ export function SaveForm(props: { name: string; histories?: HISTORY_DATA[] }) {
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
+        defaultValues: {
+            origin: "",
+            destination: "",
+        },
     });
 
-    form.setValue("origin", origin?.name || "");
-    form.setValue("destination", destination?.name || "");
+    useEffect(() => {
+        form.setValue("origin", origin?.name || "");
+        form.setValue("destination", destination?.name || "");
+    }, [origin, destination]);
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
         console.log(JSON.stringify(data, null, 2));
